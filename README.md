@@ -63,23 +63,10 @@ Hospital.system/
 ---
 ## Setup & Run
 
-### Clone the Repository
-git clone https://github.com/maryamm585/Hospital-Management-System.git
+### Clone the Repository : git clone https://github.com/maryamm585/Hospital-Management-System.git
 cd Hospital-Managment-System
-
 ### Configure Database
-
-spring.datasource.url=jdbc:mysql://localhost:3306/hospital_db
-spring.datasource.username=root
-spring.datasource.password=yourpassword
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
 ### Build & Run
-
-mvn clean install
-mvn spring-boot:run
-
 ### Access API
 Server runs on: http://localhost:8080
 
