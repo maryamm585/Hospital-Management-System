@@ -43,6 +43,22 @@ Hospital.system/
 - Medical operations tracking.
 - DTOs for clean API communication.
 - Validation & exception handling.
+
+---
+
+## Entities
+- User – Represents system users (patients, doctors, etc..).
+- Role (enum) – Defines user roles within the system (e.g., DOCTOR, PATIENT).
+- Appointment – Represents medical appointments between patients and doctors.
+- AppointmentStatus (enum) – Defines appointment lifecycle states (e.g., PENDING, CONFIRMED, CANCELLED, COMPLETED).
+- PatientRecord – Stores medical history and health details of patients.
+- Prescription – Represents medications prescribed by doctors.
+- Medicine – Stores information about available medicines.
+- Order – Represents medicine orders placed by patients.
+- OrderItem – Represents individual medicines in an order.
+- OrderStatus (enum) – Defines different states of an order (e.g., PLACED, SHIPPED, DELIVERED, CANCELLED).
+- Message – Represents messages exchanged between doctor and patient.
+
   
 ---
 ## Setup & Run
@@ -67,3 +83,6 @@ mvn spring-boot:run
 ### Access API
 Server runs on: http://localhost:8080
 
+  ---
+
+  
