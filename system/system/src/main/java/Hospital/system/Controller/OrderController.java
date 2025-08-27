@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/orders")
-@PreAuthorize("hasRole('PATIENT')")
+@PreAuthorize("hasAnyRole('PATIENT', 'PHARMACY')")
 @RequiredArgsConstructor
 public class OrderController {
 }
