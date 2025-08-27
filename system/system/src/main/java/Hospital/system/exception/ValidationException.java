@@ -10,6 +10,11 @@ public class ValidationException extends RuntimeException {
         this.bindingResult = bindingResult;
     }
 
+    public ValidationException(String message) {
+        super(message);
+        this.bindingResult = null;
+    }
+
     public BindingResult getBindingResult() {
         return bindingResult;
     }

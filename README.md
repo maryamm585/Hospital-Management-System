@@ -72,4 +72,106 @@ Server runs on: http://localhost:8080
 
   ---
 
+## Security Configuration
+
+Added system security files for the Hospital Management System with 4 roles: **ADMIN**, **DOCTOR**, **PATIENT**, and **PHARMACY**.
+
+### Files:
+
+#### 1. Security Layer
+
+- **TokenBlacklistService.java**
+- **JwtUtil.java**
+- **JwtAuthFilter.java**
+- **CustomUserDetailsService.java**
+- **SecurityConfig.java**
+
+#### 2. Controller Layer
+
+- **AuthController.java**
+
+#### 3. Service Layer
+
+- **AuthService.java**
+
+### Role-Based Access Control
+
+The SecurityConfig now includes endpoint protection for all 4 roles:
+
+#### ADMIN
+
+- `/api/admin/**` - Full admin access
+- `/api/users/**` - User management
+
+#### DOCTOR
+
+- `/api/doctors/**` - Doctor-specific endpoints
+- `/api/appointments/doctor/**` - Doctor appointment management
+- `/api/prescriptions/doctor/**` - Prescription management
+- `/api/patient-records/doctor/**` - Patient record access
+- `/api/messages/doctor/**` - Doctor-patient messaging
+
+#### PATIENT
+
+- `/api/patients/**` - Patient-specific endpoints
+- `/api/appointments/patient/**` - Patient appointment booking
+- `/api/orders/patient/**` - Medicine ordering
+- `/api/messages/patient/**` - Patient-doctor messaging
+
+#### PHARMACY
+
+- `/api/pharmacy/**` - Pharmacy-specific endpoints
+- `/api/medicines/**` - Medicine CRUD operations
+- `/api/orders/pharmacy/**` - Order management
+
+#### Shared Endpoints
+
+- `/api/appointments` - Accessible by DOCTOR and PATIENT
+- `/api/messages` - Accessible by DOCTOR and PATIENT
+- `/api/medicines/list` - Viewable by PATIENT, DOCTOR, and PHARMACY
+
+### API Endpoints
+
+#### Authentication Endpoints (Public)
+
+```
+POST /api/auth/register - Register new user
+POST /api/auth/login - User login
+POST /api/auth/logout - User logout
+```
+
+### Usage Example
+
+#### Registration Request:
+
+```json
+{
+  "name": "Dr. John Smith",
+  "email": "john.smith@hospital.com",
+  "password": "password123",
+  "role": "DOCTOR"
+}
+```
+
+#### Login Request:
+
+```json
+{
+  "email": "john.smith@hospital.com",
+  "password": "password123"
+}
+```
+
+#### Response Format:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiJ9...",
+  "email": "john.smith@hospital.com",
+  "role": "DOCTOR",
+  "message": "Login successful"
+}
+```
+
+
   
