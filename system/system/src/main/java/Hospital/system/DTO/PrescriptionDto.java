@@ -7,7 +7,7 @@ import lombok.Data;
 public class PrescriptionDto {
     private Long doctorId;
     private Long patientId;
-    private Long medicineId;
+    private String medicineName;
 
     @NotBlank
     private String dosage;

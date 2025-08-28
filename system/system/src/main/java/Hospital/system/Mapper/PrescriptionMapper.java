@@ -9,7 +9,7 @@ import Hospital.system.Entity.Medicine;
 // the dto only carries IDs So, when converting dto to entity your service layer
 // must fetch the User doctor, User patient, and Medicine medicine objects from the DB first
 //.findById
-
+// except medicine, won't deal with ids for it.
 
 public class PrescriptionMapper {
     // dto to entity
@@ -28,7 +28,7 @@ public class PrescriptionMapper {
         PrescriptionDto dto = new PrescriptionDto();
         dto.setDoctorId(entity.getDoctor().getId());
         dto.setPatientId(entity.getPatient().getId());
-        dto.setMedicineId(entity.getMedicine().getId());
+        dto.setMedicineName(entity.getMedicine().getName());
         dto.setDosage(entity.getDosage());
         dto.setInstructions(entity.getInstructions());
         return dto;

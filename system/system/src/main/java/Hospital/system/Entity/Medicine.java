@@ -15,6 +15,7 @@ public class Medicine {
         private Long id;
 
         @NotBlank(message = "Medicine name is required")
+        @Column(unique = true)
         private String name;
 
         @Min(value = 1, message = "Price must be greater than 0")
