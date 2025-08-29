@@ -20,7 +20,7 @@ public class OrderItemMapper {
     // entity to dto
     public static OrderItemDto toDto(OrderItem entity) {
         OrderItemDto dto = new OrderItemDto(
-                entity.getMedicine().getId(),
+                entity.getMedicine().getName(),
                 entity.getQuantity(),
                 entity.getPrice()
         );

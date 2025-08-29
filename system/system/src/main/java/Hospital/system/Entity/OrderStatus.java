@@ -1,5 +1,5 @@
 package Hospital.system.Entity;
 
 public enum OrderStatus {
-    PLACED, PAID, SHIPPED, COMPLETED, CANCELLED
+    PLACED, SHIPPED, COMPLETED, CANCELLED
 }

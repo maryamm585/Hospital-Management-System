@@ -13,9 +13,10 @@ import java.util.stream.Collectors;
 public class OrderMapper {
 
     // Convert DTO -> Entity
-    public static Order toEntity(OrderDto dto, User patient, List<OrderItem> items) {
+    public static Order toEntity(OrderDto dto, User patient,User pharmacy, List<OrderItem> items) {
         return Order.builder()
                 .patient(patient) // comes from service (UserRepository.findById)
+                .pharmacy(pharmacy)
                 .totalPrice(dto.getTotalPrice())
                 .status(dto.getStatus() != null
                         ? OrderStatus.valueOf(dto.getStatus())
@@ -28,6 +29,7 @@ public class OrderMapper {
     public static OrderDto toDto(Order order) {
         OrderDto dto = new OrderDto();
         dto.setPatientId(order.getPatient().getId());
+        dto.setPharmacyId(order.getPharmacy().getId());
         dto.setTotalPrice(order.getTotalPrice());
         dto.setStatus(order.getStatus().name());
 

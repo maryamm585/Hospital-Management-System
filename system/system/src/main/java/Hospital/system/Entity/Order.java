@@ -22,6 +22,10 @@ public class Order {
     @JoinColumn(name = "patient_id", nullable = false)
     private User patient;
 
+    @ManyToOne
+    @JoinColumn(name = "pharmacy_id", nullable = false)
+    private User pharmacy;
+
     private LocalDateTime orderTime;
 
     @PrePersist
@@ -35,7 +39,6 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.PLACED;
-
 
     @NotEmpty
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

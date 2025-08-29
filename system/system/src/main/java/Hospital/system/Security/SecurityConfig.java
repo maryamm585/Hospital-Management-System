@@ -66,6 +66,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/pharmacy/**").hasRole("PHARMACY")
                         .requestMatchers("/api/medicines/**").hasRole("PHARMACY")
                         .requestMatchers("/api/orders/pharmacy/**").hasRole("PHARMACY")
+                        .requestMatchers("/api/orders/{id}/ship").hasRole("PHARMACY")
+                        .requestMatchers("/api/orders/{id}/complete").hasRole("PHARMACY")
+
 
                         // Shared endpoints (accessible by multiple roles)
                         .requestMatchers("/api/appointments").hasAnyRole("DOCTOR", "PATIENT")

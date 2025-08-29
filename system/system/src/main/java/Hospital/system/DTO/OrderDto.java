@@ -11,6 +11,9 @@ public class OrderDto {
     private Long patientId;
 
     @NotNull
+    private Long pharmacyId;
+
+    @NotNull
     @Min(1)
     private Double totalPrice;
     private String status;

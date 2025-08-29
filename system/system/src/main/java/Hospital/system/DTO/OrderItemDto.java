@@ -12,8 +12,8 @@ import lombok.NonNull;
 @NoArgsConstructor
 
 public class OrderItemDto {
-    @NonNull
-    private Long medicineId;
+    @NotNull
+    private String medicineName;
 
     @NotNull
     @Min(1)
