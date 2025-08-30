@@ -1,6 +1,5 @@
 package Hospital.system.Controller;
 
-import Hospital.system.DTO.AppointmentDto;
 import Hospital.system.DTO.OrderDto;
 import Hospital.system.Entity.OrderStatus;
 import Hospital.system.Service.OrderService;

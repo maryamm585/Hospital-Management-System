@@ -8,8 +8,6 @@ import Hospital.system.Entity.User;
 import Hospital.system.Repository.AppointmentRepository;
 import Hospital.system.Repository.UserRepository;
 import Hospital.system.exception.ResourceNotFoundException;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

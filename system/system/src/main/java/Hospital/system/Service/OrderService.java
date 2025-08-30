@@ -2,7 +2,6 @@ package Hospital.system.Service;
 
 import Hospital.system.DTO.OrderDto;
 import Hospital.system.Entity.*;
-import Hospital.system.Mapper.AppointmentMapper;
 import Hospital.system.Mapper.OrderItemMapper;
 import Hospital.system.Mapper.OrderMapper;
 import Hospital.system.Repository.MedicineRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
