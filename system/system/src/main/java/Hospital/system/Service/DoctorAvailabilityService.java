@@ -11,6 +11,7 @@ import Hospital.system.exception.ResourceNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DoctorAvailabilityService {
     private final UserRepository userRepository;
     private final AppointmentRepository appointmentRepository;
@@ -31,25 +33,36 @@ public class DoctorAvailabilityService {
 
     @Transactional(readOnly = true)
     public List<DoctorAvailabilityDto> getAllDoctorsAvailability(LocalDate day) {
+        log.info("Fetching availability for all doctors on day={}", day);
+
         List<User> doctors = userRepository.findByRole(Role.DOCTOR);
         List<DoctorAvailabilityDto> result = new ArrayList<>();
 
         for (User doctor : doctors) {
             result.add(getDoctorAvailabilityForDay(doctor, day));
         }
-
+        log.info("Completed fetching availability for {} doctors on {}", doctors.size(), day);
         return result;
     }
 
     @Transactional(readOnly = true)
     public DoctorAvailabilityDto getDoctorAvailabilityById(Long doctorId, LocalDate day) {
-        User doctor = userRepository.findByIdAndRole(doctorId, Role.DOCTOR)
-                .orElseThrow(() -> new ResourceNotFoundException("Doctor not found with id " + doctorId));
+        log.info("Fetching availability for doctorId={} on day={}", doctorId, day);
 
-        return getDoctorAvailabilityForDay(doctor, day);
+        User doctor = userRepository.findByIdAndRole(doctorId, Role.DOCTOR)
+                .orElseThrow(() -> {
+                    log.error("Doctor not found with id={}", doctorId);
+                    return new ResourceNotFoundException("Doctor not found with id " + doctorId);
+                });
+
+        DoctorAvailabilityDto dto = getDoctorAvailabilityForDay(doctor, day);
+        log.info("Doctor {} availability slots={}", doctorId, dto.getAvailableTimes().size());
+        return dto;
     }
 
     private DoctorAvailabilityDto getDoctorAvailabilityForDay(User doctor, LocalDate day) {
+        log.debug("Generating availability for doctorId={} on day={}", doctor.getId(), day);
+
         List<LocalDateTime> availableSlots = new ArrayList<>();
 
         LocalDateTime dayStart = day.atTime(START_WORK);
@@ -62,6 +75,7 @@ public class DoctorAvailabilityService {
                 dayStart,
                 dayEnd
         );
+        log.debug("Doctor {} has {} non-cancelled appointments on {}", doctor.getId(), appointments.size(), day);
 
         // generate all 1-hour slots
         LocalDateTime slotStart = dayStart;
@@ -79,7 +93,7 @@ public class DoctorAvailabilityService {
 
             slotStart = slotStart.plusHours(1);
         }
-
+        log.debug("Doctor {} available slots count={}", doctor.getId(), availableSlots.size());
         return new DoctorAvailabilityDto(doctor.getId(), doctor.getName(), availableSlots);
     }
 
