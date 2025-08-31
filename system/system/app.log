@@ -75,3 +75,4 @@ Hibernate: insert into users (email,name,password,role) values (?,?,?,?)
 Hibernate: select u1_0.id,u1_0.email,u1_0.name,u1_0.password,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select u1_0.id,u1_0.email,u1_0.name,u1_0.password,u1_0.role from users u1_0 where u1_0.email=?
 Hibernate: select u1_0.id,u1_0.email,u1_0.name,u1_0.password,u1_0.role from users u1_0 where u1_0.email=?
+05:19:49.413 [HikariPool-1:housekeeper] WARN  com.zaxxer.hikari.pool.PoolBase - HikariPool-1 - Failed to validate connection com.mysql.cj.jdbc.ConnectionImpl@69c798ee (No operations allowed after connection closed.). Possibly consider using a shorter maxLifetime value.
