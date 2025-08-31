@@ -1,4 +1,4 @@
-package Hospital.system.integration.Controller;
+package Hospital.system.Controller;
 
 import Hospital.system.DTO.LoginDto;
 import Hospital.system.DTO.UserRegistrationDto;
@@ -21,8 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource(locations = "classpath:application-test.properties")
-@Transactional
-public class AuthControllerTest {
+public class AuthControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,6 +32,7 @@ public class AuthControllerTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Transactional
     @Test
     void testRegisterUser() throws Exception {
         UserRegistrationDto dto = new UserRegistrationDto();
@@ -50,6 +50,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Registration successful"));
     }
 
+    @Transactional
     @Test
     void testLoginUser() throws Exception {
         UserRegistrationDto dto = new UserRegistrationDto();
@@ -76,6 +77,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Login successful"));
     }
 
+    @Transactional
     @Test
     void testLogoutUser() throws Exception {
         UserRegistrationDto registerDto = new UserRegistrationDto();
@@ -108,6 +110,7 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").value("Logged out successfully"));
     }
 
+    @Transactional
     @Test
     void testRegisterUserWithInvalidRole() throws Exception {
         UserRegistrationDto invalidRoleDto = new UserRegistrationDto();
@@ -123,36 +126,5 @@ public class AuthControllerTest {
                 .andExpect(jsonPath("$.message").exists());
     }
 
-    @Test
-    void testLogoutAfterLogin() throws Exception {
-        UserRegistrationDto userDto = new UserRegistrationDto();
-        userDto.setName("Alice");
-        userDto.setEmail("alice@example.com");
-        userDto.setPassword("password123");
-        userDto.setRole("PATIENT");
 
-        mockMvc.perform(post("/api/auth/register")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isCreated());
-
-        LoginDto loginDto = new LoginDto();
-        loginDto.setEmail("alice@example.com");
-        loginDto.setPassword("password123");
-
-        String token = mockMvc.perform(post("/api/auth/login")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(loginDto)))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        String authToken = objectMapper.readTree(token).get("token").asText();
-
-        mockMvc.perform(post("/api/auth/logout")
-                        .header("Authorization", "Bearer " + authToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.message").value("Logged out successfully"));
-    }
 }

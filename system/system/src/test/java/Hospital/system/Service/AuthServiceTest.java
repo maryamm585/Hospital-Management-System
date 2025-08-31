@@ -1,4 +1,4 @@
-package Hospital.system.unit.Service;
+package Hospital.system.Service;
 
 import Hospital.system.DTO.LoginDto;
 import Hospital.system.DTO.UserRegistrationDto;
