@@ -1,0 +1,163 @@
+# Docker Compose version is now optional in newer versions
+
+services:
+  # MySQL Database (Production)
+  mysql:
+    image: mysql:8.0
+    container_name: hospital-mysql-prod
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: hospital
+      MYSQL_USER: ${MYSQL_USER:-hospital_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-hospital_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_prod_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - ./mysql/conf:/etc/mysql/conf.d
+    networks:
+      - hospital-prod-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: "0.5"
+        reservations:
+          memory: 512M
+          cpus: "0.25"
+
+  # RabbitMQ (Production)
+  rabbitmq:
+    image: rabbitmq:3.12-management
+    container_name: hospital-rabbitmq-prod
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-hospital_user}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-hospital_pass}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_prod_data:/var/lib/rabbitmq
+    networks:
+      - hospital-prod-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      timeout: 20s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.25"
+        reservations:
+          memory: 256M
+          cpus: "0.1"
+
+  # Hospital Management Application (Production)
+  hospital-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    image: hospital-management:prod
+    container_name: hospital-app-prod
+    restart: unless-stopped
+    environment:
+      # Database configuration
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospital
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+
+      # JPA configuration (Production settings)
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      SPRING_JPA_SHOW_SQL: "false"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+
+      # JWT configuration
+      JWT_SECRET: ${JWT_SECRET:-mySecretKeyThatNeedsToBeAtLeast32Characters}
+      JWT_EXPIRATION: ${JWT_EXPIRATION:-1800000}
+
+      # RabbitMQ configuration
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: ${RABBITMQ_USER:-hospital_user}
+      SPRING_RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-hospital_pass}
+
+      # Application configuration (Production)
+      SERVER_PORT: 8080
+      LOGGING_LEVEL_ROOT: WARN
+      LOGGING_LEVEL_HOSPITAL_SYSTEM: INFO
+      SPRING_PROFILES_ACTIVE: prod
+
+      # Production JVM tuning
+      JAVA_OPTS: "-Xmx1g -Xms512m -XX:+UseG1GC -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp -XX:+ExitOnOutOfMemoryError"
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - hospital-prod-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: "1.0"
+        reservations:
+          memory: 1G
+          cpus: "0.5"
+
+  # Nginx reverse proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: hospital-nginx-prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx_logs:/var/log/nginx
+    depends_on:
+      - hospital-app
+    networks:
+      - hospital-prod-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.25"
+        reservations:
+          memory: 128M
+          cpus: "0.1"
+
+volumes:
+  mysql_prod_data:
+    driver: local
+  rabbitmq_prod_data:
+    driver: local
+  nginx_logs:
+    driver: local
+
+networks:
+  hospital-prod-network:
+    driver: bridge
+    driver_opts:
+      com.docker.network.bridge.name: hospital-prod-br0
